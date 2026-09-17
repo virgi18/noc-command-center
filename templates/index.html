@@ -1,0 +1,579 @@
+{{define "login.html"}}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NOC Command Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #0b0f19; color: #f8fafc; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 30px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .form-control { background-color: #0f172a; border-color: #334155; color: #fff; border-radius: 10px; padding: 10px 14px; }
+        .form-control:focus { background-color: #0f172a; color: #fff; border-color: #6366f1; box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25); }
+        .btn-custom { background-color: #6366f1; color: white; border-radius: 10px; font-weight: 600; padding: 10px; border: none; width: 100%; }
+        .btn-custom:hover { background-color: #4f46e5; color: white; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold text-white"><i class="fa-solid fa-network-wired text-primary me-2"></i>NOC Center</h3>
+            <p class="text-muted small">Silakan login atau masuk sebagai guest</p>
+        </div>
+
+        {{if .ErrorLogin}}
+        <div class="alert alert-danger alert-dismissible fade show small" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i> {{.ErrorLogin}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {{end}}
+
+        <form action="/login" method="POST">
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Username</label>
+                <input type="text" class="form-control" name="username" placeholder="Masukkan username...">
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Masukkan password...">
+            </div>
+            <button type="submit" class="btn btn-custom mb-3"><i class="fa-solid fa-right-to-bracket me-2"></i>Login sebagai Admin</button>
+        </form>
+
+        <form action="/login" method="POST">
+            <input type="hidden" name="action" value="guest">
+            <button type="submit" class="btn btn-outline-secondary w-100 btn-sm" style="border-radius: 10px;"><i class="fa-solid fa-eye me-2"></i>Masuk sebagai Guest (Read-Only)</button>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{{end}}
+
+{{define "dashboard.html"}}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOC Command Center - Enterprise Monitoring</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { 
+            --primary-color: #6366f1; 
+            --primary-hover: #4f46e5; 
+            --bg-body: #0b0f19;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --border-color: #334155;
+        }
+        body { 
+            background: linear-gradient(135deg, #0b0f19 0%, #111827 50%, #1f2937 100%);
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            color: var(--text-main); 
+            min-height: 100vh;
+        }
+        .card { 
+            border: 1px solid var(--border-color); 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); 
+            background: var(--card-bg); 
+            color: var(--text-main);
+        }
+        .btn-custom { 
+            background-color: var(--primary-color); 
+            color: white; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            padding: 10px 20px; 
+            transition: all 0.3s; 
+            border: none;
+        }
+        .btn-custom:hover { 
+            background-color: var(--primary-hover); 
+            color: white; 
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        }
+        .nav-pills .nav-link { 
+            border-radius: 10px; 
+            font-weight: 600; 
+            padding: 12px 24px; 
+            color: var(--text-muted); 
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        .nav-pills .nav-link:hover { color: #fff; background: rgba(51, 65, 85, 0.7); }
+        .nav-pills .nav-link.active { background-color: var(--primary-color); color: white; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5); border-color: transparent; }
+        .form-control, .form-select { background-color: #0f172a; border-color: var(--border-color); color: #fff; border-radius: 10px; padding: 10px 14px; }
+        .form-control:focus, .form-select:focus { background-color: #0f172a; color: #fff; border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25); }
+        .table { color: var(--text-main); background-color: transparent; margin-bottom: 0; }
+        .table th { background-color: #0f172a !important; color: var(--text-muted) !important; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color) !important; border-top: none; }
+        .table td { background-color: var(--card-bg) !important; color: var(--text-main) !important; vertical-align: middle; font-size: 0.9rem; border-bottom: 1px solid rgba(51, 65, 85, 0.6) !important; }
+        .table-hover tbody tr:hover td { background-color: rgba(51, 65, 85, 0.4) !important; color: #fff !important; }
+        .badge { padding: 6px 12px; font-weight: 600; border-radius: 8px; }
+        .search-box { position: relative; }
+        .search-box i { position: absolute; left: 16px; top: 14px; color: var(--text-muted); }
+        .search-box input { padding-left: 45px; }
+        .stat-card { border-left: 5px solid var(--primary-color); background: linear-gradient(145deg, #1e293b, #111827); }
+        .modal-content { background-color: #1e293b; color: #fff; border: 1px solid var(--border-color); }
+        .btn-close { filter: invert(1); }
+        p.text-muted, .text-muted { color: #cbd5e1 !important; }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                {{if .IsAdmin}}
+                <span class="badge bg-success border border-success"><i class="fa-solid fa-user-shield me-1"></i> Logged in as: Admin</span>
+                {{else}}
+                <span class="badge bg-secondary border border-secondary"><i class="fa-solid fa-user me-1"></i> Mode: Guest (Read-Only)</span>
+                {{end}}
+            </div>
+            <div>
+                <a href="/logout" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout / Ganti Akun</a>
+            </div>
+        </div>
+
+        {{if .ErrorLogin}}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> {{.ErrorLogin}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {{end}}
+
+        <div class="text-center mb-4">
+            <h1 class="fw-bold text-white mb-1"><i class="fa-solid fa-network-wired me-2" style="color: #818cf8;"></i>NOC Command Center</h1>
+            <p style="color: #cbd5e1 !important;">Enterprise Network Monitoring Dashboard & Tracker System</p>
+            <ul class="nav nav-pills justify-content-center gap-2 mt-3">
+                <li class="nav-item">
+                    <a class="nav-link {{if eq .ActiveTab "dashboard"}}active{{end}}" href="/dashboard">
+                        <i class="fa-solid fa-chart-pie me-2"></i> Dashboard Monitoring
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{if eq .ActiveTab "tracker"}}active{{end}}" href="/tracker">
+                        <i class="fa-solid fa-headset me-2"></i> Troubleshoot Tracker
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{if eq .ActiveTab "inventory"}}active{{end}}" href="/inventory">
+                        <i class="fa-solid fa-boxes-stacked me-2"></i> Inventaris Perangkat
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        {{if eq .ActiveTab "dashboard"}}
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card p-4 stat-card" style="border-color: #3b82f6;">
+                    <h6 class="small fw-bold uppercase" style="color: #cbd5e1;">Total Tiket Masuk</h6>
+                    <h2 class="fw-bold text-white mt-2 mb-0">{{.Dashboard.TotalTickets}}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-4 stat-card" style="border-color: #f59e0b;">
+                    <h6 class="small fw-bold uppercase" style="color: #cbd5e1;">Tiket On Progress</h6>
+                    <h2 class="fw-bold text-warning mt-2 mb-0">{{.Dashboard.TicketsOnProgress}}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-4 stat-card" style="border-color: #10b981;">
+                    <h6 class="small fw-bold uppercase" style="color: #cbd5e1;">Tiket Selesai (Resolved)</h6>
+                    <h2 class="fw-bold text-success mt-2 mb-0">{{.Dashboard.TicketsResolved}}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-4 stat-card" style="border-color: #8b5cf6;">
+                    <h6 class="small fw-bold uppercase" style="color: #cbd5e1;">Total Perangkat Inventaris</h6>
+                    <h2 class="fw-bold mt-2 mb-0" style="color: #a78bfa;">{{.Dashboard.TotalInventory}}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-chart-pie me-2" style="color: #818cf8;"></i> Persentase Status Tiket</h5>
+                    <div style="max-height: 300px; display: flex; justify-content: center;">
+                        <canvas id="ticketChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-chart-bar text-success me-2"></i> Persentase Kategori Barang</h5>
+                    <div style="max-height: 300px; display: flex; justify-content: center;">
+                        <canvas id="inventoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const ticketCtx = document.getElementById('ticketChart').getContext('2d');
+            new Chart(ticketCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['On Progress', 'Resolved'],
+                    datasets: [{
+                        data: [{{.Dashboard.TicketsOnProgress}}, {{.Dashboard.TicketsResolved}}],
+                        backgroundColor: ['#f59e0b', '#10b981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { plugins: { legend: { labels: { color: '#f1f5f9' } } } }
+            });
+
+            const invCtx = document.getElementById('inventoryChart').getContext('2d');
+            new Chart(invCtx, {
+                type: 'pie',
+                data: {
+                    labels: [
+                        {{range $k, $v := .Dashboard.CategoryStats}}"{{$k}}",{{end}}
+                    ],
+                    datasets: [{
+                        data: [
+                            {{range $k, $v := .Dashboard.CategoryStats}}{{$v}},{{end}}
+                        ],
+                        backgroundColor: ['#6366f1', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { plugins: { legend: { labels: { color: '#f1f5f9' } } } }
+            });
+        </script>
+        {{end}}
+
+        {{if eq .ActiveTab "inventory"}}
+        <div class="card p-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+                <h5 class="fw-bold text-white m-0"><i class="fa-solid fa-boxes-stacked me-2" style="color: #818cf8;"></i> Daftar Inventaris Perangkat</h5>
+                <div class="d-flex gap-2 w-100 justify-content-end">
+                    <form method="GET" action="/inventory" class="search-box w-100" style="max-width: 300px;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="q" class="form-control" placeholder="Cari Serial, Nama..." value="{{.SearchQuery}}">
+                    </form>
+                    {{if .IsAdmin}}
+                    <button class="btn btn-custom" onclick="openAddInventoryModal()">
+                        <i class="fa-solid fa-plus me-2"></i> Tambah Perangkat
+                    </button>
+                    {{end}}
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Serial Num</th>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Regional</th>
+                            <th>Owner</th>
+                            {{if .IsAdmin}}<th class="text-center">Aksi</th>{{end}}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Inventories}}
+                        <tr>
+                            <td class="fw-bold" style="color: #818cf8;">{{.SerialNum}}</td>
+                            <td>{{.ItemName}}</td>
+                            <td><span class="badge bg-dark text-light border border-secondary">{{.Category}}</span></td>
+                            <td>{{.Location}}</td>
+                            <td>
+                                {{if eq .Status "In"}}<span class="badge bg-success-subtle text-success border border-success">In</span>
+                                {{else}}<span class="badge bg-danger-subtle text-danger border border-danger">Out</span>{{end}}
+                            </td>
+                            <td>{{.Regional}}</td>
+                            <td>{{.Owner}}</td>
+                            {{if $.IsAdmin}}
+                            <td class="text-center">
+                                <a href="/edit-inventory?serial={{.SerialNum}}" class="btn btn-sm btn-outline-warning me-1" title="Edit"><i class="fa-solid fa-pen"></i></a>
+                                <a href="/delete-inventory?serial={{.SerialNum}}" class="btn btn-sm btn-outline-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                            {{end}}
+                        </tr>
+                        {{else}}
+                        <tr><td colspan="{{if .IsAdmin}}8{{else}}7{{end}}" class="text-center text-muted py-5" style="color: #cbd5e1 !important;">Belum ada data inventaris ditemukan.</td></tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{if .IsAdmin}}
+        <div class="modal fade" id="inventoryModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content shadow-lg" style="border-radius: 16px;">
+                    <form id="inventoryForm" action="{{if .EditInventory}}/update-inventory{{else}}/save-inventory{{end}}" method="POST">
+                        <div class="modal-header border-bottom border-secondary">
+                            <h5 class="modal-title fw-bold" id="inventoryModalTitle">
+                                {{if .EditInventory}}Edit Perangkat Inventaris{{else}}Input Perangkat Baru{{end}}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="resetInventoryUrl()"></button>
+                        </div>
+                        <div class="modal-body">
+                            {{if .EditInventory}}<input type="hidden" name="original_serial" value="{{.EditInventory.SerialNum}}">{{end}}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Serial Number</label>
+                                    <input type="text" class="form-control" name="serial_num" value="{{if .EditInventory}}{{.EditInventory.SerialNum}}{{end}}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Item Name</label>
+                                    <input type="text" class="form-control" name="item_name" value="{{if .EditInventory}}{{.EditInventory.ItemName}}{{end}}" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Category</label>
+                                    <input type="text" class="form-control" name="category" value="{{if .EditInventory}}{{.EditInventory.Category}}{{end}}" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label small fw-bold">Qty</label>
+                                    <input type="number" class="form-control" name="qty" value="{{if .EditInventory}}{{.EditInventory.Qty}}{{else}}1{{end}}" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label small fw-bold">In/Out</label>
+                                    <select class="form-select" name="status">
+                                        <option value="In" {{if and .EditInventory (eq .EditInventory.Status "In")}}selected{{end}}>In</option>
+                                        <option value="Out" {{if and .EditInventory (eq .EditInventory.Status "Out")}}selected{{end}}>Out</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Location</label>
+                                    <input type="text" class="form-control" name="location" value="{{if .EditInventory}}{{.EditInventory.Location}}{{end}}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Regional</label>
+                                    <input type="text" class="form-control" name="regional" value="{{if .EditInventory}}{{.EditInventory.Regional}}{{end}}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold">Network Type</label>
+                                    <input type="text" class="form-control" name="network_type" value="{{if .EditInventory}}{{.EditInventory.NetworkType}}{{end}}">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold">Mbps</label>
+                                    <input type="number" class="form-control" name="mbps" value="{{if .EditInventory}}{{.EditInventory.Mbps}}{{end}}">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold">Owner</label>
+                                    <input type="text" class="form-control" name="owner" value="{{if .EditInventory}}{{.EditInventory.Owner}}{{end}}">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Notes</label>
+                                <input type="text" class="form-control" name="note" value="{{if .EditInventory}}{{.EditInventory.Note}}{{end}}">
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top border-secondary">
+                            <button type="submit" class="btn btn-custom w-100">Simpan Perangkat</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{end}}
+
+        <script>
+            function openAddInventoryModal() {
+                const form = document.getElementById('inventoryForm');
+                form.action = "/save-inventory";
+                form.reset();
+                const hiddenInput = form.querySelector('input[name="original_serial"]');
+                if (hiddenInput) hiddenInput.remove();
+                document.getElementById('inventoryModalTitle').innerText = "Input Perangkat Baru";
+                var myModal = new bootstrap.Modal(document.getElementById('inventoryModal'));
+                myModal.show();
+            }
+
+            function resetInventoryUrl() {
+                if (window.location.search.includes('serial=')) {
+                    window.location.href = "/inventory";
+                }
+            }
+
+            {{if and .IsAdmin .EditInventory}}
+            document.addEventListener("DOMContentLoaded", function() {
+                var myModal = new bootstrap.Modal(document.getElementById('inventoryModal'));
+                myModal.show();
+                document.getElementById('inventoryModal').addEventListener('hidden.bs.modal', function () {
+                    resetInventoryUrl();
+                });
+            });
+            {{end}}
+        </script>
+        {{end}}
+
+        {{if eq .ActiveTab "tracker"}}
+        <div class="card p-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+                <h5 class="fw-bold text-white m-0"><i class="fa-solid fa-clipboard-list text-success me-2"></i> Riwayat Troubleshoot</h5>
+                <div class="d-flex gap-2 w-100 justify-content-end">
+                    <form method="GET" action="/tracker" class="search-box w-100" style="max-width: 300px;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="q" class="form-control" placeholder="Cari Tiket, Customer..." value="{{.SearchQuery}}">
+                    </form>
+                    {{if .IsAdmin}}
+                    <button class="btn btn-success text-white fw-semibold" style="border-radius: 10px;" onclick="openAddTicketModal()">
+                        <i class="fa-solid fa-plus me-2"></i> Buat Tiket Troubleshoot
+                    </button>
+                    {{end}}
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Ticket No</th>
+                            <th>Customer / Product</th>
+                            <th>Issue Details</th>
+                            <th>SLA</th>
+                            {{if .IsAdmin}}<th class="text-center">Aksi</th>{{end}}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Tickets}}
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-white">{{.TicketNumber}}</span><br>
+                                <span class="text-muted small" style="color: #cbd5e1 !important;">Tgl: {{.DateTicket}}</span>
+                            </td>
+                            <td>
+                                <span class="fw-semibold" style="color: #818cf8;">{{.Customer}}</span><br>
+                                <span class="badge bg-dark text-light border border-secondary">{{.Product}}</span>
+                            </td>
+                            <td>
+                                <span class="d-block text-truncate" style="max-width: 250px;"><b>Log:</b> {{.LogIssue}}</span>
+                            </td>
+                            <td>
+                                {{if eq .SLA "On Progress"}}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning">On Progress</span>
+                                {{else}}
+                                    <span class="badge bg-success-subtle text-success border border-success">{{.SLA}}</span>
+                                {{end}}
+                            </td>
+                            {{if $.IsAdmin}}
+                            <td class="text-center">
+                                <a href="/edit-ticket?id={{.ID}}" class="btn btn-sm btn-outline-warning me-1" title="Edit"><i class="fa-solid fa-pen"></i></a>
+                                <a href="/delete-ticket?id={{.ID}}" class="btn btn-sm btn-outline-danger" title="Hapus" onclick="return confirm('Yakin hapus tiket ini?')"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                            {{end}}
+                        </tr>
+                        {{else}}
+                        <tr><td colspan="{{if .IsAdmin}}5{{else}}4{{end}}" class="text-center text-muted py-5" style="color: #cbd5e1 !important;">Belum ada data tiket ditemukan.</td></tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{if .IsAdmin}}
+        <div class="modal fade" id="ticketModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content shadow-lg" style="border-radius: 16px;">
+                    <form id="ticketForm" action="{{if .EditTicket}}/update-ticket{{else}}/save-ticket{{end}}" method="POST">
+                        <div class="modal-header border-bottom border-secondary">
+                            <h5 class="modal-title fw-bold" id="ticketModalTitle">
+                                {{if .EditTicket}}Edit Tiket Troubleshoot{{else}}Buat Tiket Troubleshoot{{end}}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="resetTicketUrl()"></button>
+                        </div>
+                        <div class="modal-body">
+                            {{if .EditTicket}}<input type="hidden" name="id" value="{{.EditTicket.ID}}">{{end}}
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Nama Customer</label>
+                                <input type="text" class="form-control" name="customer" value="{{if .EditTicket}}{{.EditTicket.Customer}}{{end}}" placeholder="Customer..." required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Product</label>
+                                <input type="text" class="form-control" name="product" value="{{if .EditTicket}}{{.EditTicket.Product}}{{end}}" placeholder="Product..." required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Ticket Number</label>
+                                <input type="text" class="form-control" name="ticket_number" value="{{if .EditTicket}}{{.EditTicket.TicketNumber}}{{end}}" placeholder="INC000123" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Date Ticket</label>
+                                <input type="date" class="form-control" name="date_ticket" value="{{if .EditTicket}}{{.EditTicket.DateTicket}}{{end}}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Reported to IOH</label>
+                                <input type="datetime-local" class="form-control" name="reported_to_ioh" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Resolve Date (Opsional)</label>
+                                <input type="datetime-local" class="form-control" name="resolve_date">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Log Issue</label>
+                                <textarea class="form-control" name="log_issue" rows="2">{{if .EditTicket}}{{.EditTicket.LogIssue}}{{end}}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Identified Issue</label>
+                                <textarea class="form-control" name="identified_issue" rows="2">{{if .EditTicket}}{{.EditTicket.IdentifiedIssue}}{{end}}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Note</label>
+                                <input type="text" class="form-control" name="note" value="{{if .EditTicket}}{{.EditTicket.Note}}{{end}}">
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top border-secondary">
+                            <button type="submit" class="btn btn-success w-100 text-white fw-semibold">Simpan Tiket</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{end}}
+
+        <script>
+            function openAddTicketModal() {
+                const form = document.getElementById('ticketForm');
+                form.action = "/save-ticket";
+                form.reset();
+                const hiddenInput = form.querySelector('input[name="id"]');
+                if (hiddenInput) hiddenInput.remove();
+                document.getElementById('ticketModalTitle').innerText = "Buat Tiket Troubleshoot";
+                var myModal = new bootstrap.Modal(document.getElementById('ticketModal'));
+                myModal.show();
+            }
+
+            function resetTicketUrl() {
+                if (window.location.search.includes('id=')) {
+                    window.location.href = "/tracker";
+                }
+            }
+
+            {{if and .IsAdmin .EditTicket}}
+            document.addEventListener("DOMContentLoaded", function() {
+                var myModal = new bootstrap.Modal(document.getElementById('ticketModal'));
+                myModal.show();
+                document.getElementById('ticketModal').addEventListener('hidden.bs.modal', function () {
+                    resetTicketUrl();
+                });
+            });
+            {{end}}
+        </script>
+        {{end}}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{{end}}
