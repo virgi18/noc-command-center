@@ -1,5 +1,13 @@
 package models
 
+type SiteVisit struct {
+	ID         int
+	SiteName   string
+	VisitDate  string
+	Status     string
+	ReportLink string
+}
+
 type Inventory struct {
 	SerialNum   string
 	ItemName    string
@@ -39,14 +47,14 @@ type DashboardData struct {
 }
 
 type PageData struct {
-	ActiveTab     string
-	Inventories   []Inventory
-	Tickets       []Ticket
-	Visits     []SiteVisit
-	SearchQuery   string
+	ActiveTab   string
+	Inventories []Inventory
+	Tickets     []Ticket
+	Visits      []SiteVisit
+	SearchQuery string
 	EditInventory *Inventory
 	EditTicket    *Ticket
-	Dashboard     DashboardData
-	IsAdmin       bool
-	ErrorLogin    string
+	Dashboard   DashboardData
+	IsAdmin     bool
+	ErrorLogin  string
 }
