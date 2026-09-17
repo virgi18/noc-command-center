@@ -618,12 +618,12 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Reported to IOH</label>
-                                <input type="datetime-local" class="form-control" name="reported_to_ioh" required>
+                                <input type="datetime-local" class="form-control" name="reported_to_ioh" value="{{if .EditTicket}}{{.EditTicket.ReportedToIOH}}{{end}}" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Resolve Date (Opsional)</label>
-                                <input type="datetime-local" class="form-control" name="resolve_date">
-                            </div>
+                                <input type="datetime-local" class="form-control" name="resolve_date" value="{{if .EditTicket}}{{.EditTicket.ResolveDate}}{{end}}">
+                            </div>                            
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Log Issue</label>
                                 <textarea class="form-control" name="log_issue" rows="2">{{if .EditTicket}}{{.EditTicket.LogIssue}}{{end}}</textarea>
