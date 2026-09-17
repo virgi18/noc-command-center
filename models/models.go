@@ -42,6 +42,7 @@ type PageData struct {
 	ActiveTab     string
 	Inventories   []Inventory
 	Tickets       []Ticket
+	Visits     []SiteVisit
 	SearchQuery   string
 	EditInventory *Inventory
 	EditTicket    *Ticket

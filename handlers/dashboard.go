@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 	"noc-app/models"
-	"github.com/xuri/excelize/v2" // <-- BENAR: Sesuai dengan nama aslinya
+	"github.com/xuri/excelize/v2"
 )
 
 const ExcelFileName = "data_inventaris.xlsx"
@@ -53,6 +53,9 @@ func HandleDashboard(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 	}
 
+	// === AMBIL DATA JADWAL VISIT DARI DATABASE ===
+	visits := GetVisits(db)
+
 	errMsg := r.URL.Query().Get("error")
 
 	data := models.PageData{
@@ -64,8 +67,10 @@ func HandleDashboard(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			TotalInventory:    totalInv,
 			CategoryStats:     catStats,
 		},
+		Visits:     visits, // <--- Data visit dimasukkan ke sini
 		IsAdmin:    IsAdmin(r),
 		ErrorLogin: errMsg,
 	}
+	
 	tmpl.ExecuteTemplate(w, "dashboard.html", data)
 }

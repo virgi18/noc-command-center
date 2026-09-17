@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os" // Tambahkan package os
+	"os"
 	"noc-app/database"
 	"noc-app/handlers"
 )
@@ -46,6 +46,17 @@ func main() {
 	}))
 	http.HandleFunc("/delete-ticket", handlers.GuardAdmin(func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleDeleteTicket(w, r, db)
+	}))
+	
+	// Routing Jadwal Visit & Laporan
+	http.HandleFunc("/visits", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleVisits(w, r, db)
+	})
+	http.HandleFunc("/save-visit", handlers.GuardAdmin(func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleSaveVisit(w, r, db)
+	}))
+	http.HandleFunc("/delete-visit", handlers.GuardAdmin(func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleDeleteVisit(w, r, db)
 	}))
 
 	// Ambil Port dari sistem Cloud, jika kosong gunakan 8080 untuk lokal

@@ -103,7 +103,7 @@
         .nav-pills .nav-link { 
             border-radius: 10px; 
             font-weight: 600; 
-            padding: 12px 24px; 
+            padding: 12px 20px; 
             color: var(--text-muted); 
             background: rgba(30, 41, 59, 0.7);
             border: 1px solid var(--border-color);
@@ -168,9 +168,15 @@
                         <i class="fa-solid fa-boxes-stacked me-2"></i> Inventaris Perangkat
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{if eq .ActiveTab "visits"}}active{{end}}" href="/visits">
+                        <i class="fa-solid fa-calendar-check me-2"></i> Jadwal Visit & Laporan
+                    </a>
+                </li>
             </ul>
         </div>
 
+        <!-- ================= TAB DASHBOARD ================= -->
         {{if eq .ActiveTab "dashboard"}}
         <div class="row g-4 mb-4">
             <div class="col-md-3">
@@ -253,6 +259,102 @@
         </script>
         {{end}}
 
+        <!-- ================= TAB JADWAL VISIT & LAPORAN ================= -->
+        {{if eq .ActiveTab "visits"}}
+        <div class="card p-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+                <h5 class="fw-bold text-white m-0"><i class="fa-solid fa-calendar-check me-2" style="color: #818cf8;"></i> Jadwal Visit & Laporan Lapangan</h5>
+                {{if .IsAdmin}}
+                <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#visitModal">
+                    <i class="fa-solid fa-plus me-2"></i> Tambah Jadwal Visit
+                </button>
+                {{end}}
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nama Site</th>
+                            <th>Jadwal</th>
+                            <th>Status Pekerjaan</th>
+                            <th>Laporan Field (OneDrive/GDrive)</th>
+                            {{if .IsAdmin}}<th class="text-center">Aksi</th>{{end}}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Visits}}
+                        <tr>
+                            <td class="fw-bold" style="color: #818cf8;">{{.SiteName}}</td>
+                            <td>{{.VisitDate}}</td>
+                            <td>
+                                {{if eq .Status "Completed"}}
+                                <span class="badge bg-success-subtle text-success border border-success">Telah Dilakukan</span>
+                                {{else}}
+                                <span class="badge bg-warning-subtle text-warning border border-warning">On Progress</span>
+                                {{end}}
+                            </td>
+                            <td>
+                                <a href="{{.ReportLink}}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-link me-1"></i> Buka Laporan
+                                </a>
+                            </td>
+                            {{if $.IsAdmin}}
+                            <td class="text-center">
+                                <a href="/delete-visit?id={{.ID}}" class="btn btn-sm btn-outline-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus jadwal ini?')"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                            {{end}}
+                        </tr>
+                        {{else}}
+                        <tr><td colspan="{{if .IsAdmin}}5{{else}}4{{end}}" class="text-center text-muted py-5">Belum ada jadwal visit ditemukan.</td></tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{if .IsAdmin}}
+        <!-- Modal Tambah Visit -->
+        <div class="modal fade" id="visitModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content shadow-lg" style="border-radius: 16px;">
+                    <form action="/save-visit" method="POST">
+                        <div class="modal-header border-bottom border-secondary">
+                            <h5 class="modal-title fw-bold">Tambah Jadwal Visit Baru</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Nama Site</label>
+                                <input type="text" class="form-control" name="site_name" placeholder="Contoh: Site Telkom Hub..." required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Jadwal Visit</label>
+                                <input type="datetime-local" class="form-control" name="visit_date" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Status Pekerjaan</label>
+                                <select class="form-select" name="status">
+                                    <option value="On Progress">Masih On Progress</option>
+                                    <option value="Completed">Telah Dilakukan</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Link Laporan (OneDrive / GDrive)</label>
+                                <input type="url" class="form-control" name="report_link" placeholder="https://onedrive.live.com/..." required>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top border-secondary">
+                            <button type="submit" class="btn btn-custom w-100">Simpan Jadwal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{end}}
+        {{end}}
+
+        <!-- ================= TAB INVENTARIS ================= -->
         {{if eq .ActiveTab "inventory"}}
         <div class="card p-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
@@ -420,6 +522,7 @@
         </script>
         {{end}}
 
+        <!-- ================= TAB TRACKER ================= -->
         {{if eq .ActiveTab "tracker"}}
         <div class="card p-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">

@@ -34,5 +34,18 @@ func InitDB() *sql.DB {
 		log.Fatalf("Gagal membuat tabel tracker: %v", err)
 	}
 
+	createVisitTableSQL := `CREATE TABLE IF NOT EXISTS site_visits (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		site_name TEXT NOT NULL,
+		visit_date TEXT NOT NULL,
+		status TEXT NOT NULL,
+		report_link TEXT NOT NULL
+	);`
+
+	_, err = db.Exec(createVisitTableSQL)
+	if err != nil {
+		log.Fatalf("Gagal membuat tabel site_visits: %v", err)
+	}
+
 	return db
 }
