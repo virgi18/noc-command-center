@@ -149,39 +149,41 @@ func HandleDeleteTicket(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 func parseTicketForm(r *http.Request) (string, string, string, string, string, string, string, string, string, string) {
-	customer := r.FormValue("customer")
-	product := r.FormValue("product")
-	dateTicket := r.FormValue("date_ticket")
-	ticketNumber := r.FormValue("ticket_number")
-	logIssue := r.FormValue("log_issue")
-	identifiedIssue := r.FormValue("identified_issue")
-	note := r.FormValue("note")
+    customer := r.FormValue("customer")
+    product := r.FormValue("product")
+    dateTicket := r.FormValue("date_ticket")
+    ticketNumber := r.FormValue("ticket_number")
+    logIssue := r.FormValue("log_issue")
+    identifiedIssue := r.FormValue("identified_issue")
+    note := r.FormValue("note")
 
-	reportedStr := r.FormValue("reported_to_ioh")
-	resolveStr := r.FormValue("resolve_date")
+    reportedStr := r.FormValue("reported_to_ioh")
+    resolveStr := r.FormValue("resolve_date")
 
-	var reportedFormatted, resolveFormatted, slaResult string
-	layoutInput := "2006-01-02T15:04"
-	layoutOutput := "15:04, 02/01/2006"
+    var reportedFormatted, resolveFormatted, slaResult string
+    layoutInput := "2006-01-02T15:04"
+    layoutDisplay := "15:04, 02/01/2006"
 
-	if tReported, err := time.Parse(layoutInput, reportedStr); err == nil {
-		reportedFormatted = tReported.Format(layoutOutput)
+    // Simpan nilai mentah input (YYYY-MM-DDTHH:MM) agar bisa dibaca kembali oleh input datetime-local saat Edit
+    reportedFormatted = reportedStr 
+    resolveFormatted = resolveStr
 
-		if tResolve, err := time.Parse(layoutInput, resolveStr); err == nil {
-			resolveFormatted = tResolve.Format(layoutOutput)
-			duration := tResolve.Sub(tReported)
-			hours := int(duration.Hours())
-			minutes := int(duration.Minutes()) % 60
-			slaResult = fmt.Sprintf("%d Jam %d Menit", hours, minutes)
-		} else {
-			resolveFormatted = "Belum Resolved"
-			slaResult = "On Progress"
-		}
-	} else {
-		reportedFormatted = reportedStr
-		resolveFormatted = resolveStr
-		slaResult = "-"
-	}
+    if tReported, err := time.Parse(layoutInput, reportedStr); err == nil {
+        if tResolve, err := time.Parse(layoutInput, resolveStr); err == nil {
+            duration := tResolve.Sub(tReported)
+            hours := int(duration.Hours())
+            minutes := int(duration.Minutes()) % 60
+            slaResult = fmt.Sprintf("%d Jam %d Menit", hours, minutes)
+            
+            // Opsional: Jika Anda ingin tabel menampilkan format jam yang rapi, 
+            // Anda bisa menyimpannya di kolom terpisah atau menyesuaikan cara tampilnya di HTML.
+            // Saat ini kita simpan format ISO agar form edit tidak kosong.
+        } else {
+            slaResult = "On Progress"
+        }
+    } else {
+        slaResult = "-"
+    }
 
-	return customer, product, dateTicket, ticketNumber, logIssue, identifiedIssue, note, reportedFormatted, resolveFormatted, slaResult
+    return customer, product, dateTicket, ticketNumber, logIssue, identifiedIssue, note, reportedFormatted, resolveFormatted, slaResult
 }
