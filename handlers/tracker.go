@@ -162,9 +162,8 @@ func parseTicketForm(r *http.Request) (string, string, string, string, string, s
 
     var reportedFormatted, resolveFormatted, slaResult string
     layoutInput := "2006-01-02T15:04"
-    layoutDisplay := "15:04, 02/01/2006"
 
-    // Simpan nilai mentah input (YYYY-MM-DDTHH:MM) agar bisa dibaca kembali oleh input datetime-local saat Edit
+    // Langsung assign string input agar formatnya tetap YYYY-MM-DDTHH:MM (sesuai datetime-local)
     reportedFormatted = reportedStr 
     resolveFormatted = resolveStr
 
@@ -174,10 +173,6 @@ func parseTicketForm(r *http.Request) (string, string, string, string, string, s
             hours := int(duration.Hours())
             minutes := int(duration.Minutes()) % 60
             slaResult = fmt.Sprintf("%d Jam %d Menit", hours, minutes)
-            
-            // Opsional: Jika Anda ingin tabel menampilkan format jam yang rapi, 
-            // Anda bisa menyimpannya di kolom terpisah atau menyesuaikan cara tampilnya di HTML.
-            // Saat ini kita simpan format ISO agar form edit tidak kosong.
         } else {
             slaResult = "On Progress"
         }
